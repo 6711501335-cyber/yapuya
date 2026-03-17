@@ -1,1 +1,43 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบแจ้งเตือนทานยา (Yapuya)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <div id="page1" class="page active">
+            <h2>ตั้งค่าแจ้งเตือนทานยา</h2>
+            <form id="medForm">
+                <div class="form-group">
+                    <label for="patientName">ชื่อผู้ป่วย:</label>
+                    <input type="text" id="patientName" required placeholder="ใส่ชื่อของคุณ">
+                </div>
+                <div class="form-group">
+                    <label for="medName">ชื่อยา:</label>
+                    <input type="text" id="medName" required placeholder="เช่น พาราเซตามอล">
+                </div>
+                <div class="form-group">
+                    <label for="medTime">เวลาแจ้งเตือน:</label>
+                    <input type="time" id="medTime" required>
+                </div>
+                <button type="submit" class="btn">บันทึกข้อมูล</button>
+            </form>
+            <button onclick="showPage('page2')" class="btn btn-secondary" style="margin-top: 10px;">ดูรายการยาทั้งหมด</button>
+        </div>
 
+        <div id="page2" class="page">
+            <h2>รายการยาของคุณ</h2>
+            <ul id="medList">
+                </ul>
+            <button onclick="showPage('page1')" class="btn btn-secondary">กลับไปเพิ่มยา</button>
+        </div>
+    </div>
+
+    <audio id="alarmSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
