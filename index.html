@@ -4,31 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบแฟ้มผลงานออนไลน์</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* --- โค้ด CSS --- */
+        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; }
+        input, textarea, button { width: 100%; margin-bottom: 10px; padding: 10px; box-sizing: border-box; }
+        button { background: #3498db; color: white; border: none; cursor: pointer; }
+        .card { background: #fafafa; border-left: 5px solid #3498db; padding: 15px; margin-bottom: 10px; }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>My Online Portfolio</h1>
-    </header>
 
-    <main>
-        <section class="form-section">
-            <h2>เพิ่มผลงานใหม่</h2>
-            <form id="portfolio-form">
-                <input type="text" id="title" placeholder="ชื่อผลงาน" required>
-                <textarea id="description" rows="4" placeholder="รายละเอียดผลงาน" required></textarea>
-                <input type="url" id="link" placeholder="ลิงก์ผลงาน (ถ้ามี)">
-                <button type="submit">บันทึกผลงาน</button>
-            </form>
-        </section>
+    <div class="container">
+        <h2>เพิ่มผลงานใหม่</h2>
+        <form id="portfolio-form">
+            <input type="text" id="title" placeholder="ชื่อผลงาน" required>
+            <textarea id="description" placeholder="รายละเอียดผลงาน" required></textarea>
+            <input type="url" id="link" placeholder="ลิงก์ผลงาน (ถ้ามี)">
+            <button type="submit">บันทึกผลงาน</button>
+        </form>
 
-        <section class="portfolio-list-section">
-            <h2>ผลงานทั้งหมด</h2>
-            <div id="portfolio-container">
-                </div>
-        </section>
-    </main>
+        <h2>ผลงานทั้งหมด</h2>
+        <div id="portfolio-container"></div>
+    </div>
 
-    <script type="module" src="script.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } 
+        from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBHsow_1xhst-NG4M0TX5nt2bXfxJ0LhQg",
+            authDomain: "yapuyaapp.firebaseapp.com",
+            projectId: "yapuyaapp",
+            storageBucket: "yapuyaapp.firebasestorage.app",
+            messagingSenderId: "861406844734",
+            appId: "1:861406844734:web:adcc9f9d8890f3f440fe6f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const colRef = collection(db, 'portfolios');
+
+        document.getElementById('portfolio-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addDoc(colRef, {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                link: document.getElementById('link').value,
+                createdAt: serverTimestamp()
+            });
+            e.target.reset();
+        });
+
+        const q = query(colRef, orderBy('createdAt', 'desc'));
+        onSnapshot(q, (snapshot) => {
+            let html = '';
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                html += `<div class="card">
+                            <h3>${data.title}</h3><p>${data.description}</p>
+                            ${data.link ? `<a href="${data.link}" target="_blank">ลิงก์ผลงาน</a>` : ''}
+                         </div>`;
+            });
+            document.getElementById('portfolio-container').innerHTML = html;
+        });
+    </script>
 </body>
 </html>
