@@ -1,110 +1,52 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
 body {
-    background-color: #f4f7f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #00b4db, #0083b0);
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-}
-
-.app-container {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 400px;
-}
-
-h2 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-label {
-    display: block;
-    margin-bottom: 5px;
-    color: #666;
-    font-weight: bold;
-}
-
-input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 16px;
-}
-
-.btn {
-    width: 100%;
-    padding: 12px;
-    background-color: #4CAF50;
+    height: 100vh;
+    margin: 0;
     color: white;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2rem;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 350px;
+}
+
+.search-box input {
+    padding: 10px;
+    border-radius: 5px;
     border: none;
-    border-radius: 6px;
-    font-size: 16px;
+    width: 70%;
+}
+
+.search-box button {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background: #ffcc00;
     cursor: pointer;
-    transition: background 0.3s;
-}
-
-.btn:hover {
-    background-color: #45a049;
-}
-
-.btn-secondary {
-    background-color: #2196F3;
-}
-
-.btn-secondary:hover {
-    background-color: #1e87db;
-}
-
-/* ควบคุมการแสดงผลของหน้า */
-.page {
-    display: none;
-}
-
-.page.active {
-    display: block;
-}
-
-/* สไตล์ของรายการยา */
-#medList {
-    list-style: none;
-    margin-bottom: 20px;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-#medList li {
-    background: #f9f9f9;
-    padding: 15px;
-    border-left: 5px solid #4CAF50;
-    margin-bottom: 10px;
-    border-radius: 4px;
-}
-
-.med-time {
-    font-size: 20px;
     font-weight: bold;
-    color: #e91e63;
 }
 
-.med-info {
-    font-size: 14px;
-    color: #555;
-    margin-top: 5px;
+.weather-card {
+    margin-top: 20px;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.temp-container {
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
