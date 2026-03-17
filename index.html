@@ -3,27 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather Forecast App</title>
+    <title>ระบบแฟ้มผลงานออนไลน์</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <header>
+        <h1>My Online Portfolio</h1>
+    </header>
 
-    <div class="container">
-        <h1>พยากรณ์อากาศ</h1>
-        <div class="search-box">
-            <input type="text" id="cityInput" placeholder="ใส่ชื่อเมือง (ภาษาอังกฤษ)...">
-            <button id="searchBtn">ค้นหา</button>
-        </div>
+    <main>
+        <section class="form-section">
+            <h2>เพิ่มผลงานใหม่</h2>
+            <form id="portfolio-form">
+                <input type="text" id="title" placeholder="ชื่อผลงาน" required>
+                <textarea id="description" rows="4" placeholder="รายละเอียดผลงาน" required></textarea>
+                <input type="url" id="link" placeholder="ลิงก์ผลงาน (ถ้ามี)">
+                <button type="submit">บันทึกผลงาน</button>
+            </form>
+        </section>
 
-        <div id="weatherResult" class="weather-card" style="display: none;">
-            <h2 id="cityName">---</h2>
-            <p id="description">---</p>
-            <div class="temp-container">
-                <span id="temp">0</span>°C
-            </div>
-            <p>ความชื้น: <span id="humidity">0</span>%</p>
-        </div>
-    </div>
+        <section class="portfolio-list-section">
+            <h2>ผลงานทั้งหมด</h2>
+            <div id="portfolio-container">
+                </div>
+        </section>
+    </main>
 
     <script type="module" src="script.js"></script>
 </body>
