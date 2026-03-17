@@ -1,54 +1,70 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+// นำเข้าฟังก์ชันที่จำเป็นจาก Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } 
+from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-// 1. Firebase Configuration
+// ข้อมูลการเชื่อมต่อ Firebase ของคุณ
 const firebaseConfig = {
-    apiKey: "AIzaSyBHsow_1xhst-NG4M0TX5nt2bXfxJ0LhQg",
-    authDomain: "yapuyaapp.firebaseapp.com",
-    projectId: "yapuyaapp",
-    storageBucket: "yapuyaapp.firebasestorage.app",
-    messagingSenderId: "861406844734",
-    appId: "1:861406844734:web:adcc9f9d8890f3f440fe6f",
-    measurementId: "G-JTYP8WJCTG"
+  apiKey: "AIzaSyBHsow_1xhst-NG4M0TX5nt2bXfxJ0LhQg",
+  authDomain: "yapuyaapp.firebaseapp.com",
+  projectId: "yapuyaapp",
+  storageBucket: "yapuyaapp.firebasestorage.app",
+  messagingSenderId: "861406844734",
+  appId: "1:861406844734:web:adcc9f9d8890f3f440fe6f",
+  measurementId: "G-JTYP8WJCTG"
 };
 
-// Initialize Firebase
+// เริ่มต้นใช้งาน Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const db = getFirestore(app);
 
-// 2. Weather Logic
-const weatherApiKey = "ใส่_OPENWEATHER_API_KEY_ตรงนี้"; // สมัครฟรีที่ openweathermap.org
-const searchBtn = document.getElementById('searchBtn');
-const cityInput = document.getElementById('cityInput');
+// อ้างอิงไปยังคอลเลกชัน "portfolios" ในฐานข้อมูล
+const colRef = collection(db, 'portfolios');
 
-searchBtn.addEventListener('click', () => {
-    const city = cityInput.value;
-    if (city) {
-        fetchWeather(city);
+// จัดการการส่งฟอร์มเพื่อเพิ่มข้อมูล
+const form = document.getElementById('portfolio-form');
+form.addEventListener('submit', async (e) => {
+    e.preventDefault(); // ป้องกันหน้าเว็บรีเฟรช
+
+    // ดึงค่าจากฟอร์ม
+    const titleValue = document.getElementById('title').value;
+    const descValue = document.getElementById('description').value;
+    const linkValue = document.getElementById('link').value;
+
+    try {
+        // เพิ่มข้อมูลลง Firestore
+        await addDoc(colRef, {
+            title: titleValue,
+            description: descValue,
+            link: linkValue,
+            createdAt: serverTimestamp() // บันทึกเวลาที่สร้าง
+        });
+        
+        // ล้างข้อมูลในฟอร์มหลังจากบันทึกเสร็จ
+        form.reset();
+        alert("บันทึกผลงานเรียบร้อยแล้ว!");
+    } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการบันทึก: ", error);
+        alert("ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
     }
 });
 
-async function fetchWeather(city) {
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${weatherApiKey}&units=metric&lang=th`;
-    
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        if (data.cod === 200) {
-            displayWeather(data);
-        } else {
-            alert("ไม่พบชื่อเมือง กรุณาลองใหม่");
-        }
-    } catch (error) {
-        console.error("Error fetching weather:", error);
-    }
-}
+// แสดงข้อมูลแบบเรียลไทม์
+const container = document.getElementById('portfolio-container');
+// เรียงลำดับจากข้อมูลที่สร้างล่าสุด
+const q = query(colRef, orderBy('createdAt', 'desc'));
 
-function displayWeather(data) {
-    document.getElementById('weatherResult').style.display = 'block';
-    document.getElementById('cityName').innerText = data.name;
-    document.getElementById('description').innerText = data.weather[0].description;
-    document.getElementById('temp').innerText = Math.round(data.main.temp);
-    document.getElementById('humidity').innerText = data.main.humidity;
-}
+onSnapshot(q, (snapshot) => {
+    let html = '';
+    snapshot.forEach((doc) => {
+        const data = doc.data();
+        html += `
+            <div class="portfolio-card">
+                <h3>${data.title}</h3>
+                <p>${data.description}</p>
+                ${data.link ? `<a href="${data.link}" target="_blank">ดูผลงาน</a>` : ''}
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+});
