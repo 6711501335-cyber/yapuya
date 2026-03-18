@@ -31,11 +31,14 @@
 
         /* --- ส่วนโปรไฟล์ (About Me) --- */
         .profile-section { background: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; margin-top: -3rem; margin-bottom: 3rem; position: relative; z-index: 10; }
-        .profile-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: -4rem; background-color: #E5E7EB; }
+        
+        /* ปรับรูปโปรไฟล์ให้รองรับโลโก้แนวนอนได้ดีขึ้นเล็กน้อย */
+        .profile-img { width: 150px; height: 150px; border-radius: 50%; object-fit: contain; border: 4px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: -4rem; background-color: #001f3f; padding: 10px; }
+        
         .profile-name { font-size: 1.5rem; font-weight: 600; margin-top: 1rem; color: var(--text-main); }
         .profile-bio { color: var(--text-muted); margin-bottom: 1.5rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
         .social-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
-        .social-btn { background-color: #F3F4F6; color: var(--text-main); text-decoration: none; padding: 0.5rem 1.2rem; border-radius: 20px; font-size: 0.9rem; font-weight: 500; transition: 0.2s; border: 1px solid #E5E7EB; }
+        .social-btn { background-color: #F3F4F6; color: var(--text-main); text-decoration: none; padding: 0.5rem 1.2rem; border-radius: 20px; font-size: 0.9rem; font-weight: 500; transition: 0.2s; border: 1px solid #E5E7EB; display: flex; align-items: center; gap: 0.5rem; }
         .social-btn:hover { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
 
         /* --- ส่วนฟอร์มเพิ่มข้อมูล --- */
@@ -93,13 +96,12 @@
     <div class="container">
         
         <div class="profile-section">
-            <img src="https://via.placeholder.com/150" alt="รูปโปรไฟล์" class="profile-img">
-            <h2 class="profile-name">ชื่อ-นามสกุล ของคุณ</h2>
-            <p class="profile-bio">นักพัฒนาเว็บไซต์อิสระ ผู้หลงใหลในการเขียนโค้ดและการสร้างสรรค์ผลงานใหม่ๆ ยินดีที่ได้รู้จักทุกคนครับ!</p>
+            <img src="profile.jpg" alt="โลโก้โปรไฟล์" class="profile-img">
+            <h2 class="profile-name">พิชญา รุจิวงษ์</h2>
+            <p class="profile-bio">นักศึกษาและนักพัฒนาเว็บไซต์ ยินดีที่ได้รู้จักและพร้อมเรียนรู้สิ่งใหม่ๆ เพื่อสร้างสรรค์ผลงานที่ตอบโจทย์ครับ!</p>
             <div class="social-links">
-                <a href="#" class="social-btn">✉️ อีเมลติดต่อ</a>
-                <a href="#" class="social-btn">📱 Facebook</a>
-                <a href="#" class="social-btn">💻 GitHub</a>
+                <a href="mailto:6711501335@chandra.ac.th" class="social-btn">✉️ อีเมลติดต่อ</a>
+                <a href="https://web.facebook.com/pichayaruchiwong/?locale=th_TH" target="_blank" class="social-btn">📱 Facebook</a>
             </div>
         </div>
 
@@ -193,8 +195,6 @@
         const logoutBtn = document.getElementById('logout-btn');
         const secretLoginBtn = document.getElementById('secret-login-btn');
         let isLoggedIn = false; 
-
-        // ตัวแปรเก็บสถานะการกรองหมวดหมู่ปัจจุบัน
         let currentFilter = 'All';
 
         secretLoginBtn.addEventListener('click', () => {
@@ -255,7 +255,7 @@
             try {
                 await addDoc(colRef, {
                     title: document.getElementById('title').value,
-                    category: document.getElementById('category').value, // เพิ่มข้อมูลหมวดหมู่ลงฐานข้อมูล
+                    category: document.getElementById('category').value,
                     description: document.getElementById('description').value,
                     link: document.getElementById('link').value,
                     createdAt: serverTimestamp()
@@ -283,13 +283,9 @@
         // จัดการเมื่อกดปุ่มกรองหมวดหมู่
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                // ลบ class active ออกจากปุ่มทั้งหมด
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                // เพิ่ม class active ให้ปุ่มที่ถูกกด
                 e.target.classList.add('active');
-                // อัปเดตตัวแปรสถานะ
                 currentFilter = e.target.getAttribute('data-category');
-                // สั่งวาดหน้าจอใหม่
                 renderPortfolios();
             });
         });
@@ -307,7 +303,6 @@
         });
 
         function renderPortfolios() {
-            // กรองข้อมูลตามหมวดหมู่ที่เลือก
             const filteredData = currentFilter === 'All' 
                 ? portfoliosData 
                 : portfoliosData.filter(item => item.category === currentFilter);
@@ -323,7 +318,6 @@
                     ? `<button onclick="deletePortfolio('${data.id}')" class="btn-delete" style="display:block;">ลบ</button>` 
                     : '';
                 
-                // สำหรับผลงานเก่าที่ไม่มีหมวดหมู่ จะแสดงเป็น 'ไม่ระบุหมวดหมู่'
                 const categoryText = data.category || 'ไม่ระบุหมวดหมู่';
 
                 html += `
