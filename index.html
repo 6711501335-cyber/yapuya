@@ -11,7 +11,6 @@
             --primary-color: #4F46E5; 
             --primary-hover: #4338CA;
             --danger-color: #EF4444;
-            --danger-hover: #DC2626;
             --bg-color: #F3F4F6;
             --card-bg: #FFFFFF;
             --text-main: #1F2937;
@@ -35,23 +34,15 @@
         input, textarea { width: 100%; padding: 0.75rem 1rem; border: 1px solid #D1D5DB; border-radius: 8px; font-family: 'Kanit', sans-serif; font-size: 1rem; }
         input:focus, textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); }
         
-        /* สไตล์สำหรับปุ่มอัปโหลดไฟล์ */
-        input[type="file"] { padding: 0.5rem; background-color: #F9FAFB; cursor: pointer; }
-
-        button[type="submit"] { background-color: var(--primary-color); color: white; border: none; padding: 0.75rem 1.5rem; font-size: 1rem; font-weight: 500; border-radius: 8px; cursor: pointer; width: 100%; transition: background-color 0.2s; font-family: 'Kanit', sans-serif; margin-top: 1rem;}
+        button[type="submit"] { background-color: var(--primary-color); color: white; border: none; padding: 0.75rem 1.5rem; font-size: 1rem; font-weight: 500; border-radius: 8px; cursor: pointer; width: 100%; transition: 0.2s; font-family: 'Kanit', sans-serif; margin-top: 1rem;}
         button[type="submit"]:hover:not(:disabled) { background-color: var(--primary-hover); }
         button:disabled { background-color: #9CA3AF; cursor: not-allowed; }
 
         .portfolio-header { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
         #portfolio-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; padding-bottom: 3rem; }
 
-        /* --- ปรับแต่งการ์ดผลงานให้รองรับรูปภาพ --- */
-        .card { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: transform 0.2s; display: flex; flex-direction: column; overflow: hidden; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-top: 4px solid var(--primary-color); transition: transform 0.2s; display: flex; flex-direction: column; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        
-        .card-img { width: 100%; height: 200px; object-fit: cover; background-color: #E5E7EB; display: flex; align-items: center; justify-content: center; color: #9CA3AF; }
-        
-        .card-content { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
         .card h3 { font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--text-main); }
         .card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; flex-grow: 1; margin-bottom: 1.25rem; }
         
@@ -75,10 +66,6 @@
         <div class="form-container">
             <h2>✨ เพิ่มผลงานใหม่</h2>
             <form id="portfolio-form">
-                <div class="input-group">
-                    <label for="image">รูปภาพหน้าปกผลงาน (แนะนำ)</label>
-                    <input type="file" id="image" accept="image/*">
-                </div>
                 <div class="input-group">
                     <label for="title">ชื่อผลงาน *</label>
                     <input type="text" id="title" required>
@@ -104,10 +91,9 @@
     </div>
 
     <script type="module">
-        // 1. นำเข้า Firebase Firestore และ Storage (เพิ่ม Storage เข้ามาใหม่)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy, doc, deleteDoc } 
+        from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBHsow_1xhst-NG4M0TX5nt2bXfxJ0LhQg",
@@ -120,13 +106,9 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const storage = getStorage(app); // เรียกใช้ Storage
         const colRef = collection(db, 'portfolios');
 
-        const form = document.getElementById('portfolio-form');
-        const submitBtn = document.getElementById('submit-btn');
-
-        // ฟังก์ชันลบข้อมูล (เปิดให้ใช้งานแบบ Global)
+        // ฟังก์ชันสำหรับลบผลงาน
         window.deletePortfolio = async (id) => {
             if(confirm('คุณแน่ใจหรือไม่ว่าต้องการลบผลงานชิ้นนี้?')) {
                 try {
@@ -138,46 +120,33 @@
             }
         };
 
+        const form = document.getElementById('portfolio-form');
+        const submitBtn = document.getElementById('submit-btn');
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            submitBtn.textContent = 'กำลังอัปโหลดและบันทึกข้อมูล...';
+            submitBtn.textContent = 'กำลังบันทึกข้อมูล...';
             submitBtn.disabled = true;
 
             try {
-                // 1. จัดการเรื่องรูปภาพก่อน
-                const imageFile = document.getElementById('image').files[0];
-                let imageUrl = "";
-
-                if (imageFile) {
-                    // สร้างชื่อไฟล์ไม่ให้ซ้ำกันด้วยวันที่และเวลา
-                    const storageRef = ref(storage, 'portfolio_images/' + Date.now() + '_' + imageFile.name);
-                    // อัปโหลดไฟล์ขึ้น Storage
-                    const uploadTask = await uploadBytesResumable(storageRef, imageFile);
-                    // ดึง URL ของรูปภาพที่อัปโหลดเสร็จแล้วมาเก็บไว้
-                    imageUrl = await getDownloadURL(uploadTask.ref);
-                }
-
-                // 2. บันทึกข้อมูลข้อความ + URL รูปภาพ ลง Firestore
                 await addDoc(colRef, {
                     title: document.getElementById('title').value,
                     description: document.getElementById('description').value,
                     link: document.getElementById('link').value,
-                    imageUrl: imageUrl, // เก็บลิงก์รูปไว้ที่นี่
                     createdAt: serverTimestamp()
                 });
-
                 form.reset();
-                alert('🎉 บันทึกผลงานและรูปภาพเรียบร้อยแล้ว!');
+                alert('🎉 บันทึกผลงานเรียบร้อยแล้ว!');
             } catch (error) {
-                console.error("Error: ", error);
-                alert('เกิดข้อผิดพลาด! กรุณาตรวจสอบสิทธิ์ Storage และ Firestore (Rules)');
+                console.error("Error adding document: ", error);
+                alert('เกิดข้อผิดพลาดในการบันทึก กรุณาตรวจสอบสิทธิ์ Firestore (Rules)');
             } finally {
                 submitBtn.textContent = 'บันทึกผลงานลงระบบ';
                 submitBtn.disabled = false;
             }
         });
 
-        // ดึงข้อมูลมาแสดงผล
+        // ดึงข้อมูลมาแสดงผลแบบเรียลไทม์
         const container = document.getElementById('portfolio-container');
         const q = query(colRef, orderBy('createdAt', 'desc'));
 
@@ -190,23 +159,15 @@
             let html = '';
             snapshot.forEach(document => {
                 const data = document.data();
-                const docId = document.id; // ดึง ID ของเอกสารมาใช้สำหรับปุ่มลบ
-                
-                // ตรวจสอบว่ามีรูปไหม ถ้าไม่มีให้แสดงกล่องสีเทา
-                const imageHtml = data.imageUrl 
-                    ? `<img src="${data.imageUrl}" alt="${data.title}" class="card-img">` 
-                    : `<div class="card-img">ไม่มีรูปภาพ</div>`;
+                const docId = document.id;
 
                 html += `
                     <div class="card">
-                        ${imageHtml}
-                        <div class="card-content">
-                            <h3>${data.title}</h3>
-                            <p>${data.description}</p>
-                            <div class="card-actions">
-                                ${data.link ? `<a href="${data.link}" target="_blank" class="btn-link">🔗 ไปยังผลงาน</a>` : ''}
-                                <button onclick="deletePortfolio('${docId}')" class="btn-delete">ลบ</button>
-                            </div>
+                        <h3>${data.title}</h3>
+                        <p>${data.description}</p>
+                        <div class="card-actions">
+                            ${data.link ? `<a href="${data.link}" target="_blank" class="btn-link">🔗 ไปยังผลงาน</a>` : ''}
+                            <button onclick="deletePortfolio('${docId}')" class="btn-delete">ลบ</button>
                         </div>
                     </div>
                 `;
