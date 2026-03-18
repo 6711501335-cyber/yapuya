@@ -11,6 +11,7 @@
             --primary-color: #4F46E5; 
             --primary-hover: #4338CA;
             --danger-color: #EF4444;
+            --danger-hover: #DC2626;
             --bg-color: #F3F4F6;
             --card-bg: #FFFFFF;
             --text-main: #1F2937;
@@ -20,9 +21,13 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); color: var(--text-main); }
 
-        header { background-color: var(--primary-color); color: white; padding: 2rem 1rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 2rem; }
+        header { background-color: var(--primary-color); color: white; padding: 2rem 1rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 2rem; position: relative; }
         header h1 { font-weight: 600; font-size: 2rem; }
         header p { font-weight: 300; margin-top: 0.5rem; opacity: 0.9; }
+        
+        /* ปุ่มออกจากระบบมุมขวาบน */
+        #logout-btn { position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-family: 'Kanit'; font-weight: 500; display: none; }
+        #logout-btn:hover { background: rgba(255,255,255,0.3); }
 
         .container { max-width: 1000px; margin: 0 auto; padding: 0 1rem; }
 
@@ -49,10 +54,13 @@
         .card-actions { display: flex; gap: 0.5rem; margin-top: auto; }
         .btn-link { flex: 1; text-align: center; background-color: #F3F4F6; color: var(--primary-color); text-decoration: none; padding: 0.5rem; border-radius: 6px; font-weight: 500; font-size: 0.9rem; transition: 0.2s; }
         .btn-link:hover { background-color: #E5E7EB; }
-        .btn-delete { background-color: white; color: var(--danger-color); border: 1px solid var(--danger-color); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-family: 'Kanit'; font-weight: 500; transition: 0.2s; }
+        .btn-delete { background-color: white; color: var(--danger-color); border: 1px solid var(--danger-color); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-family: 'Kanit'; font-weight: 500; transition: 0.2s; display: none; /* ซ่อนไว้ก่อน จะโชว์ตอนล็อกอิน */ }
         .btn-delete:hover { background-color: var(--danger-color); color: white; }
         
         #loading { text-align: center; color: var(--text-muted); grid-column: 1 / -1; padding: 2rem; }
+
+        /* ซ่อน/แสดง ส่วนต่างๆ */
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -60,10 +68,27 @@
     <header>
         <h1>ระบบแฟ้มผลงานออนไลน์</h1>
         <p>บันทึกและจัดการพอร์ตโฟลิโอของคุณได้อย่างง่ายดาย</p>
+        <button id="logout-btn">ออกจากระบบ</button>
     </header>
 
     <div class="container">
-        <div class="form-container">
+        
+        <div id="login-section" class="form-container">
+            <h2>🔒 เข้าสู่ระบบผู้ดูแล</h2>
+            <form id="login-form">
+                <div class="input-group">
+                    <label>อีเมล</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="input-group">
+                    <label>รหัสผ่าน</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" id="login-submit-btn">เข้าสู่ระบบ</button>
+            </form>
+        </div>
+
+        <div id="admin-section" class="form-container hidden">
             <h2>✨ เพิ่มผลงานใหม่</h2>
             <form id="portfolio-form">
                 <div class="input-group">
@@ -83,7 +108,7 @@
         </div>
 
         <div class="portfolio-header">
-            <h2>📚 ผลงานทั้งหมดของคุณ</h2>
+            <h2>📚 ผลงานทั้งหมด</h2>
         </div>
         <div id="portfolio-container">
             <p id="loading">กำลังโหลดข้อมูล...</p>
@@ -91,9 +116,10 @@
     </div>
 
     <script type="module">
+        // เพิ่มการนำเข้า Authentication
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy, doc, deleteDoc } 
-        from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBHsow_1xhst-NG4M0TX5nt2bXfxJ0LhQg",
@@ -106,27 +132,67 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app); // เรียกใช้ Auth
         const colRef = collection(db, 'portfolios');
 
-        // ฟังก์ชันสำหรับลบผลงาน
-        window.deletePortfolio = async (id) => {
-            if(confirm('คุณแน่ใจหรือไม่ว่าต้องการลบผลงานชิ้นนี้?')) {
-                try {
-                    await deleteDoc(doc(db, 'portfolios', id));
-                } catch (error) {
-                    console.error("Error deleting document: ", error);
-                    alert("ไม่สามารถลบได้ โปรดตรวจสอบสิทธิ์ Firestore");
-                }
+        // ควบคุมการแสดงผล UI
+        const loginSection = document.getElementById('login-section');
+        const adminSection = document.getElementById('admin-section');
+        const logoutBtn = document.getElementById('logout-btn');
+        let isLoggedIn = false; // ตัวแปรเก็บสถานะล็อกอิน
+
+        // --- 1. ตรวจสอบสถานะการล็อกอินแบบ Real-time ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // ล็อกอินแล้ว
+                isLoggedIn = true;
+                loginSection.classList.add('hidden');
+                adminSection.classList.remove('hidden');
+                logoutBtn.style.display = 'block';
+            } else {
+                // ยังไม่ได้ล็อกอิน
+                isLoggedIn = false;
+                loginSection.classList.remove('hidden');
+                adminSection.classList.add('hidden');
+                logoutBtn.style.display = 'none';
             }
-        };
+            renderPortfolios(); // รีเฟรชหน้าผลงานเพื่อเปิด/ปิดปุ่มลบ
+        });
 
-        const form = document.getElementById('portfolio-form');
-        const submitBtn = document.getElementById('submit-btn');
-
-        form.addEventListener('submit', async (e) => {
+        // --- 2. จัดการการล็อกอิน ---
+        const loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            submitBtn.textContent = 'กำลังบันทึกข้อมูล...';
-            submitBtn.disabled = true;
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const btn = document.getElementById('login-submit-btn');
+            
+            btn.textContent = 'กำลังตรวจสอบ...';
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                loginForm.reset();
+            } catch (error) {
+                alert('อีเมลหรือรหัสผ่านไม่ถูกต้อง!');
+                console.error(error);
+            } finally {
+                btn.textContent = 'เข้าสู่ระบบ';
+            }
+        });
+
+        // --- 3. จัดการการออกจากระบบ ---
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                alert('ออกจากระบบเรียบร้อย');
+            });
+        });
+
+        // --- 4. จัดการฟอร์มเพิ่มผลงาน ---
+        const portfolioForm = document.getElementById('portfolio-form');
+        portfolioForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.textContent = 'กำลังบันทึกข้อมูล...';
+            btn.disabled = true;
 
             try {
                 await addDoc(colRef, {
@@ -135,31 +201,55 @@
                     link: document.getElementById('link').value,
                     createdAt: serverTimestamp()
                 });
-                form.reset();
+                portfolioForm.reset();
                 alert('🎉 บันทึกผลงานเรียบร้อยแล้ว!');
             } catch (error) {
-                console.error("Error adding document: ", error);
-                alert('เกิดข้อผิดพลาดในการบันทึก กรุณาตรวจสอบสิทธิ์ Firestore (Rules)');
+                console.error("Error: ", error);
+                alert('เกิดข้อผิดพลาดในการบันทึก');
             } finally {
-                submitBtn.textContent = 'บันทึกผลงานลงระบบ';
-                submitBtn.disabled = false;
+                btn.textContent = 'บันทึกผลงานลงระบบ';
+                btn.disabled = false;
             }
         });
 
-        // ดึงข้อมูลมาแสดงผลแบบเรียลไทม์
+        // ฟังก์ชันสำหรับลบผลงาน
+        window.deletePortfolio = async (id) => {
+            if(confirm('คุณแน่ใจหรือไม่ว่าต้องการลบผลงานชิ้นนี้?')) {
+                try {
+                    await deleteDoc(doc(db, 'portfolios', id));
+                } catch (error) {
+                    console.error("Error deleting document: ", error);
+                    alert("ไม่สามารถลบได้");
+                }
+            }
+        };
+
+        // --- 5. ดึงข้อมูลมาแสดงผล ---
+        let portfoliosData = [];
         const container = document.getElementById('portfolio-container');
         const q = query(colRef, orderBy('createdAt', 'desc'));
 
         onSnapshot(q, (snapshot) => {
-            if (snapshot.empty) {
+            portfoliosData = [];
+            snapshot.forEach(document => {
+                portfoliosData.push({ id: document.id, ...document.data() });
+            });
+            renderPortfolios();
+        });
+
+        // ฟังก์ชันวาดกล่องผลงาน (แยกออกมาเพื่อให้รีเฟรชปุ่มลบได้ตามสถานะล็อกอิน)
+        function renderPortfolios() {
+            if (portfoliosData.length === 0) {
                 container.innerHTML = '<p id="loading">ยังไม่มีข้อมูลผลงานในระบบ</p>';
                 return;
             }
 
             let html = '';
-            snapshot.forEach(document => {
-                const data = document.data();
-                const docId = document.id;
+            portfoliosData.forEach(data => {
+                // ซ่อนหรือแสดงปุ่มลบ ขึ้นอยู่กับสถานะ isLoggedIn
+                const deleteBtnHtml = isLoggedIn 
+                    ? `<button onclick="deletePortfolio('${data.id}')" class="btn-delete" style="display:block;">ลบ</button>` 
+                    : '';
 
                 html += `
                     <div class="card">
@@ -167,13 +257,13 @@
                         <p>${data.description}</p>
                         <div class="card-actions">
                             ${data.link ? `<a href="${data.link}" target="_blank" class="btn-link">🔗 ไปยังผลงาน</a>` : ''}
-                            <button onclick="deletePortfolio('${docId}')" class="btn-delete">ลบ</button>
+                            ${deleteBtnHtml}
                         </div>
                     </div>
                 `;
             });
             container.innerHTML = html;
-        });
+        }
     </script>
 </body>
 </html>
