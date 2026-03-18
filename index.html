@@ -11,7 +11,6 @@
             --primary-color: #4F46E5; 
             --primary-hover: #4338CA;
             --danger-color: #EF4444;
-            --danger-hover: #DC2626;
             --bg-color: #F3F4F6;
             --card-bg: #FFFFFF;
             --text-main: #1F2937;
@@ -21,32 +20,51 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; }
 
-        header { background-color: var(--primary-color); color: white; padding: 3rem 1rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 2rem; position: relative; }
+        header { background-color: var(--primary-color); color: white; padding: 3rem 1rem 5rem 1rem; text-align: center; position: relative; }
         header h1 { font-weight: 600; font-size: 2.5rem; margin-bottom: 0.5rem; }
         header p { font-weight: 300; font-size: 1.1rem; opacity: 0.9; }
         
         #logout-btn { position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-family: 'Kanit'; font-weight: 500; display: none; }
         #logout-btn:hover { background: rgba(255,255,255,0.3); }
 
-        .container { max-width: 1000px; margin: 0 auto; padding: 0 1rem; flex-grow: 1; width: 100%; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 1rem; flex-grow: 1; width: 100%; position: relative; }
 
+        /* --- ส่วนโปรไฟล์ (About Me) --- */
+        .profile-section { background: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; margin-top: -3rem; margin-bottom: 3rem; position: relative; z-index: 10; }
+        .profile-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: -4rem; background-color: #E5E7EB; }
+        .profile-name { font-size: 1.5rem; font-weight: 600; margin-top: 1rem; color: var(--text-main); }
+        .profile-bio { color: var(--text-muted); margin-bottom: 1.5rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+        .social-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+        .social-btn { background-color: #F3F4F6; color: var(--text-main); text-decoration: none; padding: 0.5rem 1.2rem; border-radius: 20px; font-size: 0.9rem; font-weight: 500; transition: 0.2s; border: 1px solid #E5E7EB; }
+        .social-btn:hover { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+
+        /* --- ส่วนฟอร์มเพิ่มข้อมูล --- */
         .form-container { background: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin-bottom: 3rem; border-top: 4px solid var(--primary-color); }
         .form-container h2 { margin-bottom: 1.5rem; color: var(--primary-color); border-bottom: 2px solid #E5E7EB; padding-bottom: 0.5rem; }
         
         .input-group { margin-bottom: 1rem; }
         .input-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.95rem; }
-        input, textarea { width: 100%; padding: 0.75rem 1rem; border: 1px solid #D1D5DB; border-radius: 8px; font-family: 'Kanit', sans-serif; font-size: 1rem; }
-        input:focus, textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); }
+        input, textarea, select { width: 100%; padding: 0.75rem 1rem; border: 1px solid #D1D5DB; border-radius: 8px; font-family: 'Kanit', sans-serif; font-size: 1rem; background-color: white; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); }
         
         button[type="submit"] { background-color: var(--primary-color); color: white; border: none; padding: 0.75rem 1.5rem; font-size: 1rem; font-weight: 500; border-radius: 8px; cursor: pointer; width: 100%; transition: 0.2s; font-family: 'Kanit', sans-serif; margin-top: 1rem;}
         button[type="submit"]:hover:not(:disabled) { background-color: var(--primary-hover); }
         button:disabled { background-color: #9CA3AF; cursor: not-allowed; }
 
-        .portfolio-header { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        /* --- ส่วนแสดงผลงานและปุ่มกรองหมวดหมู่ --- */
+        .portfolio-header { margin-bottom: 1rem; text-align: center; }
+        .filter-container { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+        .filter-btn { background-color: white; border: 1px solid #D1D5DB; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; font-family: 'Kanit'; font-size: 0.9rem; transition: 0.2s; color: var(--text-main); }
+        .filter-btn:hover { background-color: #F3F4F6; }
+        .filter-btn.active { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+
         #portfolio-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; padding-bottom: 3rem; }
 
-        .card { background: var(--card-bg); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-top: 4px solid var(--primary-color); transition: transform 0.2s; display: flex; flex-direction: column; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-top: 4px solid var(--primary-color); transition: transform 0.2s; display: flex; flex-direction: column; position: relative; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        
+        .category-badge { display: inline-block; background-color: #EEF2FF; color: var(--primary-color); font-size: 0.8rem; padding: 0.2rem 0.6rem; border-radius: 4px; margin-bottom: 0.5rem; font-weight: 500; width: fit-content; }
+        
         .card h3 { font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--text-main); }
         .card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; flex-grow: 1; margin-bottom: 1.25rem; }
         
@@ -57,10 +75,8 @@
         .btn-delete:hover { background-color: var(--danger-color); color: white; }
         
         #loading { text-align: center; color: var(--text-muted); grid-column: 1 / -1; padding: 2rem; }
-
         .hidden { display: none !important; }
 
-        /* ส่วนท้ายเว็บ (Footer) สำหรับซ่อนปุ่มแอดมิน */
         footer { text-align: center; padding: 2rem; margin-top: auto; color: var(--text-muted); font-size: 0.9rem; }
         #secret-login-btn { background: none; border: none; color: inherit; cursor: pointer; text-decoration: underline; font-family: 'Kanit'; }
         #secret-login-btn:hover { color: var(--primary-color); }
@@ -76,6 +92,17 @@
 
     <div class="container">
         
+        <div class="profile-section">
+            <img src="https://via.placeholder.com/150" alt="รูปโปรไฟล์" class="profile-img">
+            <h2 class="profile-name">ชื่อ-นามสกุล ของคุณ</h2>
+            <p class="profile-bio">นักพัฒนาเว็บไซต์อิสระ ผู้หลงใหลในการเขียนโค้ดและการสร้างสรรค์ผลงานใหม่ๆ ยินดีที่ได้รู้จักทุกคนครับ!</p>
+            <div class="social-links">
+                <a href="#" class="social-btn">✉️ อีเมลติดต่อ</a>
+                <a href="#" class="social-btn">📱 Facebook</a>
+                <a href="#" class="social-btn">💻 GitHub</a>
+            </div>
+        </div>
+
         <div id="login-section" class="form-container hidden">
             <h2>🔒 เข้าสู่ระบบผู้ดูแล</h2>
             <form id="login-form">
@@ -98,6 +125,17 @@
                     <label for="title">ชื่อผลงาน *</label>
                     <input type="text" id="title" required>
                 </div>
+                
+                <div class="input-group">
+                    <label for="category">หมวดหมู่ผลงาน *</label>
+                    <select id="category" required>
+                        <option value="เว็บไซต์ (Web)">เว็บไซต์ (Web)</option>
+                        <option value="กราฟิก (Design)">กราฟิก (Design)</option>
+                        <option value="วิดีโอ (Video)">วิดีโอ (Video)</option>
+                        <option value="อื่นๆ (Other)">อื่นๆ (Other)</option>
+                    </select>
+                </div>
+
                 <div class="input-group">
                     <label for="description">รายละเอียดผลงาน *</label>
                     <textarea id="description" rows="3" required></textarea>
@@ -113,6 +151,15 @@
         <div class="portfolio-header">
             <h2>📚 ผลงานทั้งหมด</h2>
         </div>
+        
+        <div class="filter-container">
+            <button class="filter-btn active" data-category="All">ทั้งหมด</button>
+            <button class="filter-btn" data-category="เว็บไซต์ (Web)">เว็บไซต์</button>
+            <button class="filter-btn" data-category="กราฟิก (Design)">กราฟิก</button>
+            <button class="filter-btn" data-category="วิดีโอ (Video)">วิดีโอ</button>
+            <button class="filter-btn" data-category="อื่นๆ (Other)">อื่นๆ</button>
+        </div>
+
         <div id="portfolio-container">
             <p id="loading">กำลังโหลดข้อมูล...</p>
         </div>
@@ -147,28 +194,28 @@
         const secretLoginBtn = document.getElementById('secret-login-btn');
         let isLoggedIn = false; 
 
-        // จัดการปุ่มลับด้านล่าง เพื่อเปิด/ปิด ฟอร์มล็อกอิน
+        // ตัวแปรเก็บสถานะการกรองหมวดหมู่ปัจจุบัน
+        let currentFilter = 'All';
+
         secretLoginBtn.addEventListener('click', () => {
             if (!isLoggedIn) {
                 loginSection.classList.toggle('hidden');
-                // เลื่อนหน้าจอขึ้นไปหาฟอร์มล็อกอิน
                 if (!loginSection.classList.contains('hidden')) {
                     loginSection.scrollIntoView({ behavior: 'smooth' });
                 }
             }
         });
 
-        // ตรวจสอบสถานะการล็อกอิน
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 isLoggedIn = true;
                 loginSection.classList.add('hidden');
                 adminSection.classList.remove('hidden');
                 logoutBtn.style.display = 'block';
-                secretLoginBtn.style.display = 'none'; // ซ่อนปุ่มลับเมื่อล็อกอินแล้ว
+                secretLoginBtn.style.display = 'none';
             } else {
                 isLoggedIn = false;
-                loginSection.classList.add('hidden'); // ซ่อนฟอร์มล็อกอินเป็นค่าเริ่มต้น
+                loginSection.classList.add('hidden');
                 adminSection.classList.add('hidden');
                 logoutBtn.style.display = 'none';
                 secretLoginBtn.style.display = 'inline';
@@ -176,7 +223,6 @@
             renderPortfolios(); 
         });
 
-        // จัดการการล็อกอิน
         const loginForm = document.getElementById('login-form');
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -190,20 +236,15 @@
                 loginForm.reset();
             } catch (error) {
                 alert('อีเมลหรือรหัสผ่านไม่ถูกต้อง!');
-                console.error(error);
             } finally {
                 btn.textContent = 'เข้าสู่ระบบ';
             }
         });
 
-        // จัดการการออกจากระบบ
         logoutBtn.addEventListener('click', () => {
-            signOut(auth).then(() => {
-                alert('ออกจากระบบเรียบร้อยแล้ว');
-            });
+            signOut(auth).then(() => alert('ออกจากระบบเรียบร้อยแล้ว'));
         });
 
-        // จัดการฟอร์มเพิ่มผลงาน
         const portfolioForm = document.getElementById('portfolio-form');
         portfolioForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -214,6 +255,7 @@
             try {
                 await addDoc(colRef, {
                     title: document.getElementById('title').value,
+                    category: document.getElementById('category').value, // เพิ่มข้อมูลหมวดหมู่ลงฐานข้อมูล
                     description: document.getElementById('description').value,
                     link: document.getElementById('link').value,
                     createdAt: serverTimestamp()
@@ -221,7 +263,6 @@
                 portfolioForm.reset();
                 alert('🎉 บันทึกผลงานเรียบร้อยแล้ว!');
             } catch (error) {
-                console.error("Error: ", error);
                 alert('เกิดข้อผิดพลาดในการบันทึก');
             } finally {
                 btn.textContent = 'บันทึกผลงานลงระบบ';
@@ -234,11 +275,24 @@
                 try {
                     await deleteDoc(doc(db, 'portfolios', id));
                 } catch (error) {
-                    console.error("Error deleting document: ", error);
                     alert("ไม่สามารถลบได้");
                 }
             }
         };
+
+        // จัดการเมื่อกดปุ่มกรองหมวดหมู่
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // ลบ class active ออกจากปุ่มทั้งหมด
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                // เพิ่ม class active ให้ปุ่มที่ถูกกด
+                e.target.classList.add('active');
+                // อัปเดตตัวแปรสถานะ
+                currentFilter = e.target.getAttribute('data-category');
+                // สั่งวาดหน้าจอใหม่
+                renderPortfolios();
+            });
+        });
 
         let portfoliosData = [];
         const container = document.getElementById('portfolio-container');
@@ -253,19 +307,28 @@
         });
 
         function renderPortfolios() {
-            if (portfoliosData.length === 0) {
-                container.innerHTML = '<p id="loading">ยังไม่มีข้อมูลผลงานในระบบ</p>';
+            // กรองข้อมูลตามหมวดหมู่ที่เลือก
+            const filteredData = currentFilter === 'All' 
+                ? portfoliosData 
+                : portfoliosData.filter(item => item.category === currentFilter);
+
+            if (filteredData.length === 0) {
+                container.innerHTML = `<p id="loading">ไม่พบผลงานในหมวดหมู่ "${currentFilter === 'All' ? 'ทั้งหมด' : currentFilter}"</p>`;
                 return;
             }
 
             let html = '';
-            portfoliosData.forEach(data => {
+            filteredData.forEach(data => {
                 const deleteBtnHtml = isLoggedIn 
                     ? `<button onclick="deletePortfolio('${data.id}')" class="btn-delete" style="display:block;">ลบ</button>` 
                     : '';
+                
+                // สำหรับผลงานเก่าที่ไม่มีหมวดหมู่ จะแสดงเป็น 'ไม่ระบุหมวดหมู่'
+                const categoryText = data.category || 'ไม่ระบุหมวดหมู่';
 
                 html += `
                     <div class="card">
+                        <span class="category-badge">${categoryText}</span>
                         <h3>${data.title}</h3>
                         <p>${data.description}</p>
                         <div class="card-actions">
