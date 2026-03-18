@@ -7,10 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <style>
-        /* --- การตั้งค่าสีและฟอนต์ --- */
         :root {
-            --primary-color: #4F46E5; /* สีน้ำเงินม่วงทันสมัย */
+            --primary-color: #4F46E5; 
             --primary-hover: #4338CA;
+            --danger-color: #EF4444;
+            --danger-hover: #DC2626;
             --bg-color: #F3F4F6;
             --card-bg: #FFFFFF;
             --text-main: #1F2937;
@@ -20,84 +21,47 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); color: var(--text-main); }
 
-        /* --- ส่วนหัวเว็บ (Header) --- */
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 2rem 1rem;
-            text-align: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-        }
+        header { background-color: var(--primary-color); color: white; padding: 2rem 1rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 2rem; }
         header h1 { font-weight: 600; font-size: 2rem; }
         header p { font-weight: 300; margin-top: 0.5rem; opacity: 0.9; }
 
-        /* --- โครงสร้างหลัก --- */
         .container { max-width: 1000px; margin: 0 auto; padding: 0 1rem; }
 
-        /* --- ฟอร์มเพิ่มข้อมูล --- */
-        .form-container {
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            margin-bottom: 3rem;
-        }
+        .form-container { background: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin-bottom: 3rem; }
         .form-container h2 { margin-bottom: 1.5rem; color: var(--primary-color); border-bottom: 2px solid #E5E7EB; padding-bottom: 0.5rem; }
+        
         .input-group { margin-bottom: 1rem; }
         .input-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.95rem; }
-        input, textarea {
-            width: 100%; padding: 0.75rem 1rem;
-            border: 1px solid #D1D5DB; border-radius: 8px;
-            font-family: 'Kanit', sans-serif; font-size: 1rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        input:focus, textarea:focus {
-            outline: none; border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-        }
-        button[type="submit"] {
-            background-color: var(--primary-color); color: white;
-            border: none; padding: 0.75rem 1.5rem; font-size: 1rem; font-weight: 500;
-            border-radius: 8px; cursor: pointer; width: 100%;
-            transition: background-color 0.2s; font-family: 'Kanit', sans-serif;
-        }
-        button[type="submit"]:hover { background-color: var(--primary-hover); }
+        input, textarea { width: 100%; padding: 0.75rem 1rem; border: 1px solid #D1D5DB; border-radius: 8px; font-family: 'Kanit', sans-serif; font-size: 1rem; }
+        input:focus, textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); }
+        
+        /* สไตล์สำหรับปุ่มอัปโหลดไฟล์ */
+        input[type="file"] { padding: 0.5rem; background-color: #F9FAFB; cursor: pointer; }
 
-        /* --- ส่วนแสดงผลงาน (Grid) --- */
+        button[type="submit"] { background-color: var(--primary-color); color: white; border: none; padding: 0.75rem 1.5rem; font-size: 1rem; font-weight: 500; border-radius: 8px; cursor: pointer; width: 100%; transition: background-color 0.2s; font-family: 'Kanit', sans-serif; margin-top: 1rem;}
+        button[type="submit"]:hover:not(:disabled) { background-color: var(--primary-hover); }
+        button:disabled { background-color: #9CA3AF; cursor: not-allowed; }
+
         .portfolio-header { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
-        #portfolio-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            padding-bottom: 3rem;
-        }
+        #portfolio-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; padding-bottom: 3rem; }
 
-        /* --- การ์ดผลงาน --- */
-        .card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            border-top: 4px solid var(--primary-color);
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: flex;
-            flex-direction: column;
-        }
+        /* --- ปรับแต่งการ์ดผลงานให้รองรับรูปภาพ --- */
+        .card { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: transform 0.2s; display: flex; flex-direction: column; overflow: hidden; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        
+        .card-img { width: 100%; height: 200px; object-fit: cover; background-color: #E5E7EB; display: flex; align-items: center; justify-content: center; color: #9CA3AF; }
+        
+        .card-content { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
         .card h3 { font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--text-main); }
         .card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; flex-grow: 1; margin-bottom: 1.25rem; }
-        .card-link {
-            display: inline-block; text-align: center;
-            background-color: #F3F4F6; color: var(--primary-color);
-            text-decoration: none; padding: 0.5rem 1rem;
-            border-radius: 6px; font-weight: 500; font-size: 0.9rem;
-            transition: background-color 0.2s;
-        }
-        .card-link:hover { background-color: #E5E7EB; }
         
-        /* Loading Text */
-        #loading { text-align: center; color: var(--text-muted); grid-column: 1 / -1; }
+        .card-actions { display: flex; gap: 0.5rem; margin-top: auto; }
+        .btn-link { flex: 1; text-align: center; background-color: #F3F4F6; color: var(--primary-color); text-decoration: none; padding: 0.5rem; border-radius: 6px; font-weight: 500; font-size: 0.9rem; transition: 0.2s; }
+        .btn-link:hover { background-color: #E5E7EB; }
+        .btn-delete { background-color: white; color: var(--danger-color); border: 1px solid var(--danger-color); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-family: 'Kanit'; font-weight: 500; transition: 0.2s; }
+        .btn-delete:hover { background-color: var(--danger-color); color: white; }
+        
+        #loading { text-align: center; color: var(--text-muted); grid-column: 1 / -1; padding: 2rem; }
     </style>
 </head>
 <body>
@@ -112,12 +76,16 @@
             <h2>✨ เพิ่มผลงานใหม่</h2>
             <form id="portfolio-form">
                 <div class="input-group">
-                    <label for="title">ชื่อผลงาน</label>
-                    <input type="text" id="title" placeholder="เช่น ระบบจัดการร้านค้า, แอพคำนวณรายรับรายจ่าย" required>
+                    <label for="image">รูปภาพหน้าปกผลงาน (แนะนำ)</label>
+                    <input type="file" id="image" accept="image/*">
                 </div>
                 <div class="input-group">
-                    <label for="description">รายละเอียดผลงาน</label>
-                    <textarea id="description" rows="4" placeholder="อธิบายจุดเด่นหรือเทคโนโลยีที่ใช้ในผลงานชิ้นนี้" required></textarea>
+                    <label for="title">ชื่อผลงาน *</label>
+                    <input type="text" id="title" required>
+                </div>
+                <div class="input-group">
+                    <label for="description">รายละเอียดผลงาน *</label>
+                    <textarea id="description" rows="3" required></textarea>
                 </div>
                 <div class="input-group">
                     <label for="link">ลิงก์ผลงาน (URL)</label>
@@ -136,12 +104,11 @@
     </div>
 
     <script type="module">
-        // 1. นำเข้า Firebase
+        // 1. นำเข้า Firebase Firestore และ Storage (เพิ่ม Storage เข้ามาใหม่)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } 
-        from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
-        // 2. ข้อมูลการเชื่อมต่อของคุณ (จากที่ให้มา)
         const firebaseConfig = {
             apiKey: "AIzaSyBHsow_1xhst-NG4M0TX5nt2bXfxJ0LhQg",
             authDomain: "yapuyaapp.firebaseapp.com",
@@ -151,63 +118,100 @@
             appId: "1:861406844734:web:adcc9f9d8890f3f440fe6f"
         };
 
-        // 3. เริ่มต้นระบบ Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const storage = getStorage(app); // เรียกใช้ Storage
         const colRef = collection(db, 'portfolios');
 
-        // 4. จัดการฟอร์มบันทึกข้อมูล
         const form = document.getElementById('portfolio-form');
         const submitBtn = document.getElementById('submit-btn');
 
+        // ฟังก์ชันลบข้อมูล (เปิดให้ใช้งานแบบ Global)
+        window.deletePortfolio = async (id) => {
+            if(confirm('คุณแน่ใจหรือไม่ว่าต้องการลบผลงานชิ้นนี้?')) {
+                try {
+                    await deleteDoc(doc(db, 'portfolios', id));
+                } catch (error) {
+                    console.error("Error deleting document: ", error);
+                    alert("ไม่สามารถลบได้ โปรดตรวจสอบสิทธิ์ Firestore");
+                }
+            }
+        };
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            submitBtn.textContent = 'กำลังบันทึก...';
+            submitBtn.textContent = 'กำลังอัปโหลดและบันทึกข้อมูล...';
             submitBtn.disabled = true;
 
             try {
+                // 1. จัดการเรื่องรูปภาพก่อน
+                const imageFile = document.getElementById('image').files[0];
+                let imageUrl = "";
+
+                if (imageFile) {
+                    // สร้างชื่อไฟล์ไม่ให้ซ้ำกันด้วยวันที่และเวลา
+                    const storageRef = ref(storage, 'portfolio_images/' + Date.now() + '_' + imageFile.name);
+                    // อัปโหลดไฟล์ขึ้น Storage
+                    const uploadTask = await uploadBytesResumable(storageRef, imageFile);
+                    // ดึง URL ของรูปภาพที่อัปโหลดเสร็จแล้วมาเก็บไว้
+                    imageUrl = await getDownloadURL(uploadTask.ref);
+                }
+
+                // 2. บันทึกข้อมูลข้อความ + URL รูปภาพ ลง Firestore
                 await addDoc(colRef, {
                     title: document.getElementById('title').value,
                     description: document.getElementById('description').value,
                     link: document.getElementById('link').value,
+                    imageUrl: imageUrl, // เก็บลิงก์รูปไว้ที่นี่
                     createdAt: serverTimestamp()
                 });
+
                 form.reset();
-                alert('🎉 บันทึกผลงานเรียบร้อยแล้ว!');
+                alert('🎉 บันทึกผลงานและรูปภาพเรียบร้อยแล้ว!');
             } catch (error) {
-                console.error("Error adding document: ", error);
-                alert('เกิดข้อผิดพลาดในการบันทึก กรุณาตรวจสอบสิทธิ์ Firestore (Rules)');
+                console.error("Error: ", error);
+                alert('เกิดข้อผิดพลาด! กรุณาตรวจสอบสิทธิ์ Storage และ Firestore (Rules)');
             } finally {
                 submitBtn.textContent = 'บันทึกผลงานลงระบบ';
                 submitBtn.disabled = false;
             }
         });
 
-        // 5. ดึงข้อมูลมาแสดงผลแบบ Real-time
+        // ดึงข้อมูลมาแสดงผล
         const container = document.getElementById('portfolio-container');
-        const q = query(colRef, orderBy('createdAt', 'desc')); // เรียงจากใหม่ไปเก่า
+        const q = query(colRef, orderBy('createdAt', 'desc'));
 
         onSnapshot(q, (snapshot) => {
             if (snapshot.empty) {
-                container.innerHTML = '<p id="loading">ยังไม่มีข้อมูลผลงานในระบบ ลองเพิ่มผลงานแรกของคุณดูสิ!</p>';
+                container.innerHTML = '<p id="loading">ยังไม่มีข้อมูลผลงานในระบบ</p>';
                 return;
             }
 
             let html = '';
-            snapshot.forEach(doc => {
-                const data = doc.data();
+            snapshot.forEach(document => {
+                const data = document.data();
+                const docId = document.id; // ดึง ID ของเอกสารมาใช้สำหรับปุ่มลบ
+                
+                // ตรวจสอบว่ามีรูปไหม ถ้าไม่มีให้แสดงกล่องสีเทา
+                const imageHtml = data.imageUrl 
+                    ? `<img src="${data.imageUrl}" alt="${data.title}" class="card-img">` 
+                    : `<div class="card-img">ไม่มีรูปภาพ</div>`;
+
                 html += `
                     <div class="card">
-                        <h3>${data.title}</h3>
-                        <p>${data.description}</p>
-                        ${data.link ? `<a href="${data.link}" target="_blank" class="card-link">🔗 ไปยังผลงาน</a>` : ''}
+                        ${imageHtml}
+                        <div class="card-content">
+                            <h3>${data.title}</h3>
+                            <p>${data.description}</p>
+                            <div class="card-actions">
+                                ${data.link ? `<a href="${data.link}" target="_blank" class="btn-link">🔗 ไปยังผลงาน</a>` : ''}
+                                <button onclick="deletePortfolio('${docId}')" class="btn-delete">ลบ</button>
+                            </div>
+                        </div>
                     </div>
                 `;
             });
             container.innerHTML = html;
-        }, (error) => {
-            console.error("Error fetching data: ", error);
-            container.innerHTML = '<p id="loading" style="color: red;">เกิดข้อผิดพลาดในการดึงข้อมูล โปรดตรวจสอบ Firestore Rules</p>';
         });
     </script>
 </body>
